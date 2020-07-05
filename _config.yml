@@ -30,7 +30,7 @@ github_username:  rlphillips
 # Build settings
 markdown: kramdown
 #theme: jekyll-theme-modernist
-theme: minima
+theme: jekyll-theme-slate
 plugins:
   - jekyll-feed
 
