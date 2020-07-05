@@ -32,7 +32,7 @@ df.head()
 
 
 
-<div>
+<div class="table-container">
 <style scoped>
     .dataframe tbody tr th:only-of-type {
         vertical-align: middle;
@@ -188,7 +188,7 @@ df.describe()
 
 
 
-<div>
+<div class="table-container">
 <style scoped>
     .dataframe tbody tr th:only-of-type {
         vertical-align: middle;
@@ -428,7 +428,7 @@ per_year_df.head()
 
 
 
-<div>
+<div class="table-container">
 <style scoped>
     .dataframe tbody tr th:only-of-type {
         vertical-align: middle;
@@ -861,7 +861,7 @@ df[ (df["site_code"].isin(unmatched)) & ( df["site_code"] != "CCK")][["year","si
 
 
 
-<div>
+<div class="table-container">
 <style scoped>
     .dataframe tbody tr th:only-of-type {
         vertical-align: middle;
@@ -1034,7 +1034,7 @@ joined.head()
 
 
 
-<div>
+<div class="table-container">
 <style scoped>
     .dataframe tbody tr th:only-of-type {
         vertical-align: middle;
@@ -1236,7 +1236,7 @@ sites.reset_index().groupby("index").filter(lambda x: len(x) > 1)
 
 
 
-<div>
+<div class="table-container">
 <style scoped>
     .dataframe tbody tr th:only-of-type {
         vertical-align: middle;
@@ -1344,7 +1344,7 @@ sites.head()
 
 
 
-<div>
+<div class="table-container">
 <style scoped>
     .dataframe tbody tr th:only-of-type {
         vertical-align: middle;
@@ -1448,7 +1448,7 @@ sites.tail()
 
 
 
-<div>
+<div class="table-container">
 <style scoped>
     .dataframe tbody tr th:only-of-type {
         vertical-align: middle;
@@ -1533,7 +1533,7 @@ joined.head(10)
 
 
 
-<div>
+<div class="table-container">
 <style scoped>
     .dataframe tbody tr th:only-of-type {
         vertical-align: middle;
@@ -1854,7 +1854,7 @@ countries_year.head()
 
 
 
-<div>
+<div class="table-container">
 <style scoped>
     .dataframe tbody tr th:only-of-type {
         vertical-align: middle;
@@ -2064,7 +2064,7 @@ country_launches
 
 
 
-<div>
+<div class="table-container">
 <style scoped>
     .dataframe tbody tr th:only-of-type {
         vertical-align: middle;
