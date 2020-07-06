@@ -1,16 +1,16 @@
 ---
 layout: post
-title:  "Space Launches Data - Quick analysis"
-date:   2020-07-04
+title:  "Space Launch Data Exploration"
+date:   2020-07-06
 categories:
   - data
 ---
 
 # Space Launches Dataset Exploration
 
-The number of space launches and satellites in orbit has increased drastically in the last few years, and we would like to see how marked that increase is compared to previous decades.
+The number of space launches and satellites in orbit has increased drastically in the last few years, and we would like to see how marked that trend is compared to previous decades.
 
-We'll be exploring launch data from the [Gunter Space Page](https://space.skyrocket.de/directories/chronology.htm), that Gunter kindly authorized me for using. In the Chronology section, we have every space launch for the year, with a list of payloads the launch carried. We'll do a quick analysis of the columns we have in the data set, do some cleaning on the columns we'll be using and visualize our information.
+We'll be exploring launch data from the [Gunter Space Page](https://space.skyrocket.de/directories/chronology.htm), that Gunter kindly authorized me for using. In the Chronology section, we have every space launch for the year, with a list of payloads the launch carried. After a quick analysis of the columns in the dataset and some cleaning on the columns with useful information, we'll create some visualizations and answer some questions.
 
 Each of our rows of our dataset will have a "payload" (something that was put in orbit, hopefully, or was lost if the launch failed), in a launch. Each launch has a unique ID. Let's see what other columns we have. (this dataset was partially cleaned for simplicity beforehand)
 
@@ -176,9 +176,9 @@ df.head()
 
 
 
-For each payload, we have what country it belongs to ("nation"). But that's not necessarily the country from where the payload was launched. That information is part of the "site" column. We also have the vehicle that was used in the launch, if the launch was successful
+For each payload, the row indicates what country it belongs to ("nation"). But that's not necessarily the country from where the payload was launched. That information is part of the "site" column. More information here: the vehicle that was used in the launch, and if the launch was successful.
 
-Besides that, we have the type of the satellite, contractor, configuration, mass, the equipment the satellite carries, the propulsion method it uses, how it is powered, its expected lifetime, and mass. Many of the columns need some cleaning so we won't concern ourselves a lot with them. Let's see which of the columns will be most useful
+Besides that, we know the type of the satellite, contractor, configuration, mass, the equipment the satellite carries, the propulsion method it uses, how it is powered, its expected lifetime, and mass. Many of the columns need some cleaning so we won't concern ourselves a lot with them. Let's see which of the columns will be most useful
 
 
 ```python
@@ -314,7 +314,7 @@ df.describe()
 
 As we gathered from peeking at the first rows, most of the columns need more cleaning in order to be useful: there are many unique values (power, contractor, type of the satellite), so we won't be able to make much sense of them without more work: there seem to be 349 different types of propulsion and power configurations, the "type / application column" seems to be indicated as "type , application" in some cases and as "type / application" in others. 
 
-Looking at the equipment column, we can tell it needs much more work. We won't use it for now, we'll focus on columns regarding the launch to get a sense of long term trends in the access countries have been gaining to space, and leave the information about individual payloads for some other time.
+Looking at the equipment column, it's easy to tell it needs much more work. It won't used for now. Instead, we'll focus on columns regarding the launch to get a sense of long term trends in the access countries have been gaining to space, and leave the information about individual payloads for some other time.
 
 
 
@@ -341,14 +341,14 @@ df["equipment"].dropna().value_counts().head(30)
     j-1 camera, index camera                                                                                   52
     radar                                                                                                      37
     tv, ir, ac                                                                                                 36
-    6 c-band transponders, 1 ku-band transponder                                                               35
     3 delta-1 c-band transponders, 3 delta-2 c-band transponders                                               35
-    zhemchug-4 camera                                                                                          30
-    docking system                                                                                             30
+    6 c-band transponders, 1 ku-band transponder                                                               35
     24 c-band transponders                                                                                     30
+    docking system                                                                                             30
+    zhemchug-4 camera                                                                                          30
+    priroda-3                                                                                                  27
     none                                                                                                       27
     1 (+1) uhf 200 w transponder, c-band uplink                                                                27
-    priroda-3                                                                                                  27
     mural-camera, index camera                                                                                 26
     ais-receiver                                                                                               25
     camera                                                                                                     23
@@ -359,9 +359,9 @@ df["equipment"].dropna().value_counts().head(30)
     Name: equipment, dtype: int64
 
 
-We'll start working with the date and the failed column. First, take a look at how many launches we had every year. Launches have been more frequent these last few years, and we'd expect to see that reflected in the data. We'll use the "failed" column to see how many launches were successful, the "site" column that denotes the launch site for the launches (and indirectly, the country), and the nation column: what country the payload being put in orbit belongs to.
+Let us start working with the date and the failed column. First, take a look at how many launches we had every year. Launches have been more frequent these last few years, and we'd expect to see that reflected in the data. We'll be using the "failed" column to see how many launches were successful; the "site" column, that denotes the launch site for the launches (and indirectly, the country); and the nation column: what country the payload being put in orbit belongs to.
 
-First, let's extract the year and the month of each launch, and calculate the launch sucess rate each year. We'll do some quick visualizations both to get a sense of the data we are working with, and to explore some trends and answer some quick questions as well.
+First, let's extract the year and the month of each launch, and calculate the launch success rate each year. After some quick visualizations, both to get a sense of the data and to find some trends that seem evident, we'll be in position to answer a few questions.
 
 ```python
 #Fixing the type / application column
@@ -376,7 +376,7 @@ df["month"] = df["date"].dt.month
 
 # First analysis - number of launches, and success rate
 
-Let's see what we have. We'll plot how many launches we've had for each year, regardless of how many payloads it was carrying, to get a sense of what we are working with, and to see if the data makes sense. For that, since we have a row for each payload, we'll first grab the year and id column, and determine the number of separate space launches each year using groupby.
+We'll plot how many launches took place each year, regardless of how many payloads it was carrying, to see if the data makes sense. For that, since the dataset has a row for each payload, we'll first grab the year and id column, and determine the number of separate space launches each year using groupby.
 
 
 ```python
@@ -389,7 +389,7 @@ per_year_df.groupby("year").size().plot(kind="line",figsize=(16,4))
 
 
 
-    <matplotlib.axes._subplots.AxesSubplot at 0x7f9901f3a190>
+    <matplotlib.axes._subplots.AxesSubplot at 0x7fae0d2009d0>
 
 
 
@@ -397,7 +397,7 @@ per_year_df.groupby("year").size().plot(kind="line",figsize=(16,4))
 ![png](/assets/images//space-launch-data-exploration_10_1.png)
 
 
-Interestingly, launches have indeed become more frequent lately, but we are still far from the peak in the Cold War. If we plot the total number of launches each decade, we see the 70s and 80s are the most active. That information seems to make sense. We also see that for 2020 we have a drop in the number of launches, since the year is not done yet!
+Interestingly enough, launches have indeed become more frequent lately, but are still far from the peak in the Cold War. If we plot the total number of launches each decade, the 70s and 80s are the most active. That information seems to make sense. We also see that for 2020 we have a drop in the number of launches, since the year is not done yet.
 
 
 ```python
@@ -407,7 +407,7 @@ per_year_df.hist(bins=[1960,1970,1980,1990,2000,2010,2020])
 
 
 
-    array([[<matplotlib.axes._subplots.AxesSubplot object at 0x7f9901e9b4d0>]],
+    array([[<matplotlib.axes._subplots.AxesSubplot object at 0x7fae0d200150>]],
           dtype=object)
 
 
@@ -416,7 +416,7 @@ per_year_df.hist(bins=[1960,1970,1980,1990,2000,2010,2020])
 ![png](/assets/images//space-launch-data-exploration_12_1.png)
 
 
-Let's take a closer look now at the success and the failures of the launches. For that, we'll grab the id and failed column of our dataset. We will also add the number of items launched into space, using size and groupby. 
+Let's take a closer look now at the success and the failures of the launches. For that, we'll grab the id and failed column of our dataset, and add the number of items launched into space, using size and groupby. 
 
 
 ```python
@@ -488,7 +488,7 @@ per_year_df.head()
 
 
 
-Let's plot them to see the percentage of successful launches each year. For that we'll need to re-arrange our data set, and add a success rate column.
+Now, plot them to see the percentage of successful launches each year. For that it will be necessary to re-arrange our data set, and add a success rate column.
 
 
 ```python
@@ -506,7 +506,7 @@ success_year= pd.melt(failures_per_year,id_vars=["year"],value_vars=["total_laun
 #success_year.tail(10)
 ```
 
-We use "melt" to unpivot our data, turning "success","failures", and "success_rate" columns to values of a single column, named variable, so we can use a grid and analyze each of these variables separately.
+ "Melt" is used to unpivot our data, turning "success","failures", and "success_rate" columns to values of a single column, named variable, in order to use a grid and analyze each of these variables separately.
 
 
 
@@ -518,7 +518,7 @@ facets.map(sns.lineplot,"year","value")
 
 
 
-    <seaborn.axisgrid.FacetGrid at 0x7f9901e11d50>
+    <seaborn.axisgrid.FacetGrid at 0x7fae0cf4bed0>
 
 
 
@@ -526,7 +526,7 @@ facets.map(sns.lineplot,"year","value")
 ![png](/assets/images//space-launch-data-exploration_18_1.png)
 
 
-As one would expect, success rate has increased a lot since the first few years, and is around 90-95% in these last few years. With our first global view done, let's try and turn our attention to this same information, but looking at the countries launching these satellites, and the information about the payload being put into orbit.
+As one would expect, success rate has increased a lot since the first few years, and is around 90-95% in these last few years. With our first global view done, let's try and turn our attention to this same information, but looking at the countries launching these satellites, and taking a closer look at the payload being put into orbit.
 
 # Launch Sites - Cleaning, and joining
 
@@ -541,7 +541,7 @@ sites.head(25)
 
 
 
-<div>
+<div class="table-container">
 <style scoped>
     .dataframe tbody tr th:only-of-type {
         vertical-align: middle;
@@ -773,7 +773,7 @@ sites.head(25)
 
 
 
-We're interested only in the country and the code, in order to join them to our launch dataset. We'll keep those columns, and build a new dataframe with the launch data. We'll tweak the site column in our dataframe, since it includes the launch pad.
+The only useful information right now is in the country and the code, in order to join them to our launch dataset. We'll keep those columns, and build a new dataframe with the launch data. Tweaking the site column in our main dataframe will be necessary since it includes the launch pad (Ba LC 1/5, for instance)
 
 
 ```python
@@ -785,12 +785,11 @@ sites.set_index("code",inplace=True)
     Has null values?  False
 
 
-In order to properly join both datasets, we need to see if the site launch codes specified in our launch data matches the site code. Time to check now what launch site codes we have that do not exist in our list of launch sites.
+In order to properly join both datasets, we need to see if the site launch codes specified in our launch data matches the site code. 
 
 
 ```python
 #Check different values for the site codes.
-#list(set(user_id)-set(df.user_id))
 launch_site_codes = set(df["site_code"].unique())
 site_codes = set(sites.index.unique())
 unmatched_codes = list(launch_site_codes-site_codes)
@@ -801,20 +800,20 @@ unmatched_codes
 
 
     ['',
-     'Va,',
-     'CCK',
-     'Mo,',
-     'BaS',
      'Kw,',
-     'Ed,',
-     'CC,',
-     'Ga,',
-     '@BaS',
-     'WI,',
-     'SLC-36B',
-     'In,',
      '@YS',
-     'SLC-36A']
+     'BaS',
+     'SLC-36B',
+     'CC,',
+     'Mo,',
+     'In,',
+     'CCK',
+     'Ga,',
+     'Va,',
+     'SLC-36A',
+     '@BaS',
+     'Ed,',
+     'WI,']
 
 
 
@@ -849,7 +848,7 @@ df[df["site_code"].isin(unmatched)]["site_code"].value_counts()
 
 
 
-Almost done.We'll find out see what that CCK site is, since it accounts for almost all of our missing values. Let's also check for the rest of the missing values by visiting the page of the launch year.
+Almost done, but more information is needed about that CCK site, since it accounts for almost all of our missing values. Also, it's necessary to check for the rest of the missing values by visiting the page of the launch year.
 
 
 ```python
@@ -993,7 +992,7 @@ df[ (df["site_code"].isin(unmatched)) & ( df["site_code"] != "CCK")][["year","si
 
 
 
-I went back to explore the source of the data, and checked the years with problematic launch sites. (https://space.skyrocket.de/doc_chr/lau2019.htm, https://space.skyrocket.de/doc_chr/lau1998.htm, etc) . CCK seems to correspond to Cape Canaveral. Since the "CCK" is listed as a Launch Site different from "CC", so we'll manually add it to our sites list. Since there are only a few, we'll check the other problematic launch codes and try to determine which country they belong to. "LC-1/5" and "SLC-x", appear to be space lauch complexes in Cape Canaveral. BaS seems to be Ba, and YS is China, not completely sure where. We'll add an entry for that site as well.
+I went back to explore the source of the data, and checked the years with problematic launch sites. (https://space.skyrocket.de/doc_chr/lau2019.htm, https://space.skyrocket.de/doc_chr/lau1998.htm, etc) . CCK seems to correspond to Cape Canaveral. Since the "CCK" is listed as a Launch Site different from "CC", I'll manually add it to our sites list. There are only a few sites, it's reasonable to go over them one by one and review the other problematic launch codes. Remember the goal is to determine which country they belong to. "LC-1/5" and "SLC-x", appear to be space lauch complexes in Cape Canaveral. BaS seems to be Ba, and YS is China, not completely sure where. We'll add an entry for that site as well.
 
 
 ```python
@@ -1022,7 +1021,7 @@ print("Number of unmatched site codes: ", len(df[df["site_code"].isin(unmatched)
     Number of unmatched site codes:  0
 
 
-0 unmatched site codes, we seem to be done. Let's join both datasets.
+0 unmatched site codes. Everything is in order to join both datasets.
 
 
 ```python
@@ -1203,7 +1202,7 @@ joined.head()
 
 
 
-There's a bit of a situation here. Launchpads that are in what was the Soviet Union are listed twice apparently. Ideally, we'd like to consider the country as "USSR" if the launch was before it collapsed. We'll need to determine when our data first registers "Russia" or another ex-USSR country, determine that as the "collapse_date" of the union, and modify our sites dataset accordingly
+There's a bit of a situation here. Launchpads that are in what was the Soviet Union are listed twice apparently. Ideally, we'd like to consider the country as "USSR" if the launch was before it collapsed. We'll need to determine when our data first registers "Russia" or another ex-USSR country, establish that as the "collapse_date" of the Soviet Union, and modify our sites dataset accordingly.
 
 
 ```python
@@ -1215,7 +1214,7 @@ grid.map(plt.hist,"year")
 
 
 
-    <seaborn.axisgrid.FacetGrid at 0x7f9903595e50>
+    <seaborn.axisgrid.FacetGrid at 0x7fae0ce08f10>
 
 
 
@@ -1223,7 +1222,7 @@ grid.map(plt.hist,"year")
 ![png](/assets/images//space-launch-data-exploration_36_1.png)
 
 
-Apparently that won't do. Some satellites are considered to be from "Russia" in the the 80s, and some are considered soviet well into the 90s. Remember, the data isn't perfect. So we'll say the launch sites belong to the USSR for dates before the dissolution of the Soviet Union. We'll find ambigous site codes and fix the rest.
+Apparently that won't do. Some satellites are considered to be from "Russia" in the the 80s, and some are considered soviet well into the 90s. Remember, the data isn't perfect. So we'll say the launch sites belong to the USSR for dates before the dissolution of the Soviet Union. Another thing to do is finding other ambiguous site codes and fix them.
 
 
 ```python
@@ -1521,7 +1520,7 @@ sites.tail()
 
 
 
-Let's now join again, and plot the launches we had for each year, by country
+Let's now join again, and plot the launches for each year, by country.
 
 
 ```python
@@ -1825,9 +1824,9 @@ joined.head(10)
 # Exploring the country data
 
 
- We'll aggregate the data we have with the agg function, which is more flexible than .count(), or .sum(), and allows us to specify what to do with each column: Nation has the country the individual payload belongs to,
+We'll aggregate the data we have with the agg function, which is more flexible than .count(), or .sum(), and allows us to specify what to do with each column: Nation has the country the individual payload belongs to.
  
-With that we can begin answering some questions, such as how many nations put payloads in space each year, how many countries have launch capabilities, and how many payloads are being put in space with each launch.
+With that we can begin answering some questions, such as how many nations put payloads in space each year, how many countries have launch capabilities, and how many payloads are placed into space with each launch.
 
 
 
@@ -1962,7 +1961,7 @@ countries_year.head()
 
 
 
-Besides this, we'll gather in a table aggregated information for year and months we'll use later:
+Furthermore, we create a table with nation information summarized by year and month.
 
 
 
@@ -1970,10 +1969,10 @@ Besides this, we'll gather in a table aggregated information for year and months
 nations_year_month = joined.groupby(["year","month"],as_index=False).agg({'nation': 'nunique'})
 ```
 
-# Visualization
+# Visualizations
 
-Now that most of our data has been processed and is in a usable form, it is time to start visualizing some of it, using Seaborn. 
-We are mostly concerned with the data summarized by year. 
+Now that most of the data has been processed and is in a usable form, it is time to start visualizing some of it, using Seaborn. 
+We are mainly concerned with the data summarized by year. 
 
 
 ```python
@@ -2010,7 +2009,7 @@ ax.set_title("Number of space launches each year (successful and unsuccessful)",
 
 # Access to space
 
-Now, to visualize how access to space has grown lately, let's go back to our original table, group by month and year and count the different countries that launched to space in that month. After that, we'll build a pivot table
+Now, to visualize how access to space has grown lately, let's go back to our original table, group by month and year and count the different countries that launched to space in that month. After that, we'll build a pivot table, and plot the different countries launching from their soil in a heatmap, and the number of nations puting satellites in orbit.
 
 
 ```python
@@ -2055,10 +2054,11 @@ Let's see how many different countries have launched from their territory, and h
 
 
 ```python
-country_launches = unique_launches.groupby("country").agg({"year":"min","type":"count"}).sort_values("year",ascending=False).reset_index()
-country_launches = country_launches.rename({"type":"launches"})
-country_launches["since_first"] = country_launches["type"] / (2020-country_launches["year"])
-country_launches
+country_launches = unique_launches.groupby("country").agg({"year":["min", "max"],"type":"count"}).reset_index()
+country_launches.columns = ['-'.join(col) for col in country_launches.columns.values]
+country_launches = country_launches.rename({"type-count":"launches","country-":"country","year-min":"first_launch_year","year-max":"last_launch_year"},axis=1)
+country_launches["yearly_rate_since_first"] = country_launches["launches"] / (2020-country_launches["first_launch_year"])
+country_launches.sort_values("first_launch_year",ascending=False)
 ```
 
 
@@ -2083,135 +2083,154 @@ country_launches
     <tr style="text-align: right;">
       <th></th>
       <th>country</th>
-      <th>year</th>
-      <th>type</th>
-      <th>since_first</th>
+      <th>first_launch_year</th>
+      <th>last_launch_year</th>
+      <th>launches</th>
+      <th>yearly_rate_since_first</th>
     </tr>
   </thead>
   <tbody>
     <tr>
-      <th>0</th>
+      <th>13</th>
       <td>New Zealand</td>
       <td>2017</td>
+      <td>2020</td>
       <td>12</td>
       <td>4.000000</td>
     </tr>
     <tr>
-      <th>1</th>
+      <th>16</th>
       <td>South Korea</td>
       <td>2009</td>
+      <td>2013</td>
       <td>3</td>
       <td>0.272727</td>
     </tr>
     <tr>
-      <th>2</th>
+      <th>7</th>
       <td>Iran</td>
       <td>2008</td>
+      <td>2020</td>
       <td>13</td>
       <td>1.083333</td>
     </tr>
     <tr>
-      <th>3</th>
+      <th>12</th>
       <td>Marshall Islands</td>
       <td>2000</td>
+      <td>2012</td>
       <td>9</td>
       <td>0.450000</td>
     </tr>
     <tr>
-      <th>4</th>
+      <th>6</th>
       <td>International</td>
       <td>1999</td>
+      <td>2014</td>
       <td>36</td>
       <td>1.714286</td>
     </tr>
     <tr>
-      <th>5</th>
+      <th>14</th>
       <td>North Korea</td>
       <td>1998</td>
+      <td>2016</td>
       <td>5</td>
       <td>0.227273</td>
     </tr>
     <tr>
-      <th>6</th>
+      <th>2</th>
       <td>Brazil</td>
       <td>1997</td>
+      <td>2003</td>
       <td>3</td>
       <td>0.130435</td>
     </tr>
     <tr>
-      <th>7</th>
+      <th>17</th>
       <td>Spain</td>
+      <td>1997</td>
       <td>1997</td>
       <td>1</td>
       <td>0.043478</td>
     </tr>
     <tr>
-      <th>8</th>
+      <th>11</th>
       <td>Kazakhstan</td>
       <td>1992</td>
+      <td>2020</td>
       <td>539</td>
       <td>19.250000</td>
     </tr>
     <tr>
-      <th>9</th>
+      <th>15</th>
       <td>Russia</td>
       <td>1992</td>
+      <td>2020</td>
       <td>277</td>
       <td>9.892857</td>
     </tr>
     <tr>
-      <th>10</th>
+      <th>8</th>
       <td>Israel</td>
       <td>1988</td>
+      <td>2016</td>
       <td>10</td>
       <td>0.312500</td>
     </tr>
     <tr>
-      <th>11</th>
+      <th>5</th>
       <td>India</td>
       <td>1979</td>
+      <td>2019</td>
       <td>74</td>
       <td>1.804878</td>
     </tr>
     <tr>
-      <th>12</th>
+      <th>4</th>
       <td>France</td>
       <td>1970</td>
+      <td>2020</td>
       <td>299</td>
       <td>5.980000</td>
     </tr>
     <tr>
-      <th>13</th>
+      <th>3</th>
       <td>China</td>
       <td>1970</td>
+      <td>2020</td>
       <td>361</td>
       <td>7.220000</td>
     </tr>
     <tr>
-      <th>14</th>
+      <th>1</th>
       <td>Australia</td>
       <td>1967</td>
+      <td>1971</td>
       <td>6</td>
       <td>0.113208</td>
     </tr>
     <tr>
-      <th>15</th>
+      <th>9</th>
       <td>Italy</td>
       <td>1967</td>
+      <td>1988</td>
       <td>9</td>
       <td>0.169811</td>
     </tr>
     <tr>
-      <th>16</th>
+      <th>10</th>
       <td>Japan</td>
       <td>1966</td>
+      <td>2020</td>
       <td>122</td>
       <td>2.259259</td>
     </tr>
     <tr>
-      <th>17</th>
+      <th>0</th>
       <td>Algeria</td>
       <td>1965</td>
+      <td>1967</td>
       <td>4</td>
       <td>0.072727</td>
     </tr>
@@ -2219,6 +2238,7 @@ country_launches
       <th>18</th>
       <td>USA</td>
       <td>1957</td>
+      <td>2020</td>
       <td>1720</td>
       <td>27.301587</td>
     </tr>
@@ -2226,6 +2246,7 @@ country_launches
       <th>19</th>
       <td>USSR / Russia</td>
       <td>1957</td>
+      <td>1991</td>
       <td>2453</td>
       <td>38.936508</td>
     </tr>
@@ -2235,7 +2256,207 @@ country_launches
 
 
 
-Most countries don't seem to stick to their programs, or develop their acquired capabilities, since many countries in this list only have a handful of launches . Algeria stopped being a French colony in 1962, but maybe the launches in '65 were from a French site? That requires some research.
+Most countries don't seem to stick to their programs, or develop their acquired capabilities, since many countries in this list only have a handful of launches . Algeria stopped being a French colony in 1962, but maybe the launches in '65 were from a French site? That requires some research. What about the last time a country launched to space?
+
+
+
+```python
+country_launches.sort_values("last_launch_year",ascending=False)
+```
+
+
+
+
+<div class="table-container">
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>country</th>
+      <th>first_launch_year</th>
+      <th>last_launch_year</th>
+      <th>launches</th>
+      <th>yearly_rate_since_first</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>10</th>
+      <td>Japan</td>
+      <td>1966</td>
+      <td>2020</td>
+      <td>122</td>
+      <td>2.259259</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>China</td>
+      <td>1970</td>
+      <td>2020</td>
+      <td>361</td>
+      <td>7.220000</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>France</td>
+      <td>1970</td>
+      <td>2020</td>
+      <td>299</td>
+      <td>5.980000</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>Iran</td>
+      <td>2008</td>
+      <td>2020</td>
+      <td>13</td>
+      <td>1.083333</td>
+    </tr>
+    <tr>
+      <th>18</th>
+      <td>USA</td>
+      <td>1957</td>
+      <td>2020</td>
+      <td>1720</td>
+      <td>27.301587</td>
+    </tr>
+    <tr>
+      <th>11</th>
+      <td>Kazakhstan</td>
+      <td>1992</td>
+      <td>2020</td>
+      <td>539</td>
+      <td>19.250000</td>
+    </tr>
+    <tr>
+      <th>13</th>
+      <td>New Zealand</td>
+      <td>2017</td>
+      <td>2020</td>
+      <td>12</td>
+      <td>4.000000</td>
+    </tr>
+    <tr>
+      <th>15</th>
+      <td>Russia</td>
+      <td>1992</td>
+      <td>2020</td>
+      <td>277</td>
+      <td>9.892857</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>India</td>
+      <td>1979</td>
+      <td>2019</td>
+      <td>74</td>
+      <td>1.804878</td>
+    </tr>
+    <tr>
+      <th>8</th>
+      <td>Israel</td>
+      <td>1988</td>
+      <td>2016</td>
+      <td>10</td>
+      <td>0.312500</td>
+    </tr>
+    <tr>
+      <th>14</th>
+      <td>North Korea</td>
+      <td>1998</td>
+      <td>2016</td>
+      <td>5</td>
+      <td>0.227273</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>International</td>
+      <td>1999</td>
+      <td>2014</td>
+      <td>36</td>
+      <td>1.714286</td>
+    </tr>
+    <tr>
+      <th>16</th>
+      <td>South Korea</td>
+      <td>2009</td>
+      <td>2013</td>
+      <td>3</td>
+      <td>0.272727</td>
+    </tr>
+    <tr>
+      <th>12</th>
+      <td>Marshall Islands</td>
+      <td>2000</td>
+      <td>2012</td>
+      <td>9</td>
+      <td>0.450000</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>Brazil</td>
+      <td>1997</td>
+      <td>2003</td>
+      <td>3</td>
+      <td>0.130435</td>
+    </tr>
+    <tr>
+      <th>17</th>
+      <td>Spain</td>
+      <td>1997</td>
+      <td>1997</td>
+      <td>1</td>
+      <td>0.043478</td>
+    </tr>
+    <tr>
+      <th>19</th>
+      <td>USSR / Russia</td>
+      <td>1957</td>
+      <td>1991</td>
+      <td>2453</td>
+      <td>38.936508</td>
+    </tr>
+    <tr>
+      <th>9</th>
+      <td>Italy</td>
+      <td>1967</td>
+      <td>1988</td>
+      <td>9</td>
+      <td>0.169811</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>Australia</td>
+      <td>1967</td>
+      <td>1971</td>
+      <td>6</td>
+      <td>0.113208</td>
+    </tr>
+    <tr>
+      <th>0</th>
+      <td>Algeria</td>
+      <td>1965</td>
+      <td>1967</td>
+      <td>4</td>
+      <td>0.072727</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
 
 
 Time to look at the data but grouping by country: let's see what countries have launched to space in the different decades. We'll draw several heatmaps, one for each quarter century, and see how the information has changed over time.
@@ -2256,10 +2477,10 @@ for i,year in enumerate(years):
 ```
 
 
-![png](/assets/images//space-launch-data-exploration_60_0.png)
+![png](/assets/images//space-launch-data-exploration_61_0.png)
 
 
-We can see the trend we saw earlier reflected here as well: before the collapse of the Soviet Union, a great number of launches that died down. The number of launches from the US stays steady, and China really picks up the pace late this past decade. We'll group the countries more conviniently and plot this in a line chart to see the countries with the most launches more clearly.
+We can see the trend we saw earlier reflected here as well: before the collapse of the Soviet Union, a great number of launches that died down. The number of launches from the US stays steady, and China really picks up the pace late this past decade. If the countries are grouped more conveniently, it's possible to plot this in a line chart to see the countries with the most launches more clearly.
 
 
 ```python
@@ -2286,17 +2507,17 @@ sns.lineplot(x="year",y="launches",hue="country",data=all_countries[ (all_countr
 
 
 
-    <matplotlib.axes._subplots.AxesSubplot at 0x7f98fb648610>
+    <matplotlib.axes._subplots.AxesSubplot at 0x7fadfe971310>
 
 
 
 
-![png](/assets/images//space-launch-data-exploration_62_1.png)
+![png](/assets/images//space-launch-data-exploration_63_1.png)
 
 
 ## Launch vehicles, number of satellites per launch
 
-One last look at our data: what about the number of satellites being put to space? Let's try visualizing how many satellites get to space each year. We'll plot the number of launches, the year, and the total number of satellites each year. We'll also visualize the number of different space vehicles employed each year. That will give us some insight about how the private sector is beginning to form the space industry
+One last look at our data: what about the number of satellites being put to space? Let's try visualizing how many satellites get to space each year. We'll plot the number of launches, the year, and the total number of satellites each year, and also visualize the number of different space vehicles employed each year. That will give us some insight about how the private sector is beginning to form the space industry
 
 
 ```python
@@ -2309,10 +2530,10 @@ fig.show()
 ```
 
 
-![png](/assets/images//space-launch-data-exploration_64_0.png)
+![png](/assets/images//space-launch-data-exploration_65_0.png)
 
 
-A perhaps better way to visualize this is to plot the payload by the number of launches. There was some increase before the introduction of Starlink by SpaceX, but so far in 2020, the difference has been staggering.
+A perhaps better way to visualize this is to plot the payload divided by the number of launches. 
 
 
 ```python
@@ -2335,22 +2556,22 @@ fig.show()
 ```
 
 
-![png](/assets/images//space-launch-data-exploration_66_0.png)
+![png](/assets/images//space-launch-data-exploration_67_0.png)
 
 
-We'll quickly plot this same info by month in the last two decades.
+There was some increase before the introduction of Starlink by SpaceX, but so far in 2020, the difference has been staggering.
 
 # What we've learned, and what's next
 
-After cleaning our data, we've notice
+After putting our data in order, we extracted a few interesting insights:
 
-* We learned that peak of launches happened in the Cold War, driven mainly by Russia.
-* Launches have increased in pace this last decade, and China 
+* We learned that peak of launches happened in the Cold War, driven mainly by the then USSR.
+* Launches have increased in pace this past decade, with China specially active.
 * Not many other countries have acquired launch capabilities. Only Iran, South Korea, and New Zealand, since the year 2000. (The Marshall islands launch site belongs to the United States). 
-* Not many countries sustain a pace of launches once they get to orbit.
-* However, the number of different countries puting payloads in orbit increased markedly, specially in these last 15 years. The last few years saw 50 different countries consistently putting a satellite in orbit.
+* Many countries are unable to sustain the pace of launches once they get to orbit. However, more research and domain knowledge is needed there: after further research, the 1997 launch from Spain consisted in launching a rocket from an aircraft, that took off from Gran Canaria. There might be some other cases similar to that one.
+* However, the number of different countries placing payloads in orbit increased markedly, specially in these past 15 years. The last few years saw 50 different countries consistently putting at least a satellite in orbit.
 
-What would we like to find out next? There are many interesting questions that would can answer with this data:
+What would we like to find out next? There are many interesting questions that can answer with this data, if we properly handle the columns that were disregarded. Furthermore, after our initial dive, some other questions arise:
 
 * What's the use of the satellites currently in space? (military, techonology)
 * What's the average mass of the payloads in orbit? Satellites supposedly got smaller these last few years.
@@ -2358,3 +2579,9 @@ What would we like to find out next? There are many interesting questions that w
 * What's the most reliable launch vehicle?
 * It would be nice to visualize some of this information in a map.
 * Do we have any information about humans in space in our data?
+* What about the launch vehicles employed? What are the different methods of launching payloads to space?
+
+
+```python
+
+```
