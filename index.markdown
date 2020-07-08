@@ -5,4 +5,4 @@
 layout: home
 ---
 
-Some data visualizations
+Some data visualizations, and data exploration. Notebooks available at https://github.com/rlphillips/notebooks/
