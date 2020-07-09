@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "Space Launch Data Exploration"
+title:  "Space launch data exploration"
 date:   2020-07-06
 categories:
   - data
@@ -319,6 +319,44 @@ Looking at the equipment column, it's easy to tell it needs much more work. It w
 
 
 ```python
+df.info()
+```
+
+    <class 'pandas.core.frame.DataFrame'>
+    RangeIndex: 9359 entries, 0 to 9358
+    Data columns (total 17 columns):
+     #   Column              Non-Null Count  Dtype 
+    ---  ------              --------------  ----- 
+     0   nation              9304 non-null   object
+     1   type / application  9165 non-null   object
+     2   operator            6994 non-null   object
+     3   contractors         8189 non-null   object
+     4   equipment           5217 non-null   object
+     5   configuration       6339 non-null   object
+     6   propulsion          6891 non-null   object
+     7   power               9088 non-null   object
+     8   lifetime            4237 non-null   object
+     9   mass                7140 non-null   object
+     10  orbit               6768 non-null   object
+     11  date                9359 non-null   object
+     12  id                  9359 non-null   object
+     13  vehicle             9359 non-null   object
+     14  site                9359 non-null   object
+     15  failed              9359 non-null   bool  
+     16  type, application   137 non-null    object
+    dtypes: bool(1), object(16)
+    memory usage: 1.2+ MB
+
+
+The nation column has some missing values. Not a lot (some 0.5% of all data), but that column will be useful later. There is no reasonable way of inferring the nation that owns the payload in rows that don't have that information available, so we'll complete with "Unknown".
+
+
+```python
+df["nation"] = df["nation"].fillna("unknown")
+```
+
+
+```python
 df["equipment"].dropna().value_counts().head(30)
 #Best stay away from this for now!
 ```
@@ -341,21 +379,21 @@ df["equipment"].dropna().value_counts().head(30)
     j-1 camera, index camera                                                                                   52
     radar                                                                                                      37
     tv, ir, ac                                                                                                 36
-    3 delta-1 c-band transponders, 3 delta-2 c-band transponders                                               35
     6 c-band transponders, 1 ku-band transponder                                                               35
-    24 c-band transponders                                                                                     30
+    3 delta-1 c-band transponders, 3 delta-2 c-band transponders                                               35
     docking system                                                                                             30
     zhemchug-4 camera                                                                                          30
-    priroda-3                                                                                                  27
-    none                                                                                                       27
+    24 c-band transponders                                                                                     30
     1 (+1) uhf 200 w transponder, c-band uplink                                                                27
+    none                                                                                                       27
+    priroda-3                                                                                                  27
     mural-camera, index camera                                                                                 26
     ais-receiver                                                                                               25
     camera                                                                                                     23
-    32 ku-band transponders                                                                                    21
     tv, ir, sm, rmk-2                                                                                          21
-    12 c-band transponders                                                                                     17
+    32 ku-band transponders                                                                                    21
     j-3 camera, disic camera                                                                                   17
+    12 c-band transponders                                                                                     17
     Name: equipment, dtype: int64
 
 
@@ -389,12 +427,12 @@ per_year_df.groupby("year").size().plot(kind="line",figsize=(16,4))
 
 
 
-    <matplotlib.axes._subplots.AxesSubplot at 0x7fae0d2009d0>
+    <matplotlib.axes._subplots.AxesSubplot at 0x7f8b66091810>
 
 
 
 
-![png](/assets/images//space-launch-data-exploration_10_1.png)
+![png](/assets/images//space-launch-data-exploration_13_1.png)
 
 
 Interestingly enough, launches have indeed become more frequent lately, but are still far from the peak in the Cold War. If we plot the total number of launches each decade, the 70s and 80s are the most active. That information seems to make sense. We also see that for 2020 we have a drop in the number of launches, since the year is not done yet.
@@ -407,13 +445,13 @@ per_year_df.hist(bins=[1960,1970,1980,1990,2000,2010,2020])
 
 
 
-    array([[<matplotlib.axes._subplots.AxesSubplot object at 0x7fae0d200150>]],
+    array([[<matplotlib.axes._subplots.AxesSubplot object at 0x7f8b65e92990>]],
           dtype=object)
 
 
 
 
-![png](/assets/images//space-launch-data-exploration_12_1.png)
+![png](/assets/images//space-launch-data-exploration_15_1.png)
 
 
 Let's take a closer look now at the success and the failures of the launches. For that, we'll grab the id and failed column of our dataset, and add the number of items launched into space, using size and groupby. 
@@ -518,12 +556,12 @@ facets.map(sns.lineplot,"year","value")
 
 
 
-    <seaborn.axisgrid.FacetGrid at 0x7fae0cf4bed0>
+    <seaborn.axisgrid.FacetGrid at 0x7f8b65e4b990>
 
 
 
 
-![png](/assets/images//space-launch-data-exploration_18_1.png)
+![png](/assets/images//space-launch-data-exploration_21_1.png)
 
 
 As one would expect, success rate has increased a lot since the first few years, and is around 90-95% in these last few years. With our first global view done, let's try and turn our attention to this same information, but looking at the countries launching these satellites, and taking a closer look at the payload being put into orbit.
@@ -800,20 +838,20 @@ unmatched_codes
 
 
     ['',
-     'Kw,',
-     '@YS',
-     'BaS',
-     'SLC-36B',
-     'CC,',
-     'Mo,',
+     'WI,',
      'In,',
-     'CCK',
-     'Ga,',
+     '@BaS',
      'Va,',
      'SLC-36A',
-     '@BaS',
+     'CC,',
+     'Kw,',
+     'Mo,',
+     'BaS',
      'Ed,',
-     'WI,']
+     'CCK',
+     'SLC-36B',
+     'Ga,',
+     '@YS']
 
 
 
@@ -1214,12 +1252,12 @@ grid.map(plt.hist,"year")
 
 
 
-    <seaborn.axisgrid.FacetGrid at 0x7fae0ce08f10>
+    <seaborn.axisgrid.FacetGrid at 0x7f8b6718ed50>
 
 
 
 
-![png](/assets/images//space-launch-data-exploration_36_1.png)
+![png](/assets/images//space-launch-data-exploration_39_1.png)
 
 
 Apparently that won't do. Some satellites are considered to be from "Russia" in the the 80s, and some are considered soviet well into the 90s. Remember, the data isn't perfect. So we'll say the launch sites belong to the USSR for dates before the dissolution of the Soviet Union. Another thing to do is finding other ambiguous site codes and fix them.
@@ -1524,7 +1562,7 @@ Let's now join again, and plot the launches for each year, by country.
 
 
 ```python
-joined = df.join(sites, on="site_code", lsuffix="site__")
+joined = df.join(sites, on="site_code")
 #print("Joined dataframe length: ",len(joined))
 joined.head(10)
 ```
@@ -2004,12 +2042,150 @@ ax.set_title("Number of space launches each year (successful and unsuccessful)",
 
 
 
-![png](/assets/images//space-launch-data-exploration_53_1.png)
+![png](/assets/images//space-launch-data-exploration_56_1.png)
 
 
 # Access to space
 
 Now, to visualize how access to space has grown lately, let's go back to our original table, group by month and year and count the different countries that launched to space in that month. After that, we'll build a pivot table, and plot the different countries launching from their soil in a heatmap, and the number of nations puting satellites in orbit.
+
+Let's first take a look the nation column to see the different nations launching to space.
+
+
+```python
+print(df["nation"].value_counts())
+print(df["nation"].value_counts().tail(40))
+```
+
+    usa                     3753
+    ussr                    1847
+    ussr / russia            904
+    china                    540
+    russia                   419
+                            ... 
+    guatemala                  1
+    usa, uk, netherlands       1
+    japan, usa                 1
+    china → indonesia          1
+    costa rica                 1
+    Name: nation, Length: 177, dtype: int64
+    portugal                                 1
+    bangladesh                               1
+    israel, france                           1
+    usa, spain                               1
+    uk, netherlands                          1
+    russia, australia                        1
+    romania                                  1
+    usa, argentina                           1
+    ethiopia                                 1
+    international (eutelsat), qatar          1
+    usa / international                      1
+    france, italy                            1
+    russia → china                           1
+    greece, saudi arabia                     1
+    germany, uk, usa                         1
+    usa, europe                              1
+    rwanda                                   1
+    international → afghanistan              1
+    india, russia                            1
+    france, usa                              1
+    canada, usa                              1
+    germany, luxembourg                      1
+    netherlands, germany, belgium, israel    1
+    italy, iraq                              1
+    europe, russia, usa                      1
+    turkmenistan                             1
+    france, europe                           1
+    turkmenistan, monaco                     1
+    azerbaijan                               1
+    italy, france                            1
+    indonesia, germany                       1
+    azerbaijan, international                1
+    usa, canada                              1
+    usa → canada                             1
+    algeria, uk                              1
+    guatemala                                1
+    usa, uk, netherlands                     1
+    japan, usa                               1
+    china → indonesia                        1
+    costa rica                               1
+    Name: nation, dtype: int64
+
+
+Ownership of satellites does not seem so simple. Some satellites belong to several countries, and after some research some seem to be transfered while in orbit (denoted by the arrow -> in the field). We'll clean this column before ploting. Let's see how many nations own a single satellite, and how many have been transfered.
+
+
+```python
+#df[ df["nation"].fillna("unknown").str.contains("→") ].count()
+multi_ownership = df[ df["nation"].str.count(",") > 0 ]
+transferred = df[ df["nation"].str.count("→") > 0 ]
+
+print("Satellites with multiple owners: ", len(multi_ownership) )
+print("Transferred satellites: ", len(transferred) )
+
+
+df["country_count"] = 1 + df["nation"].str.count(",")
+
+fix, axes = plt.subplots(3,1,figsize=(10,10))
+
+axes[0].set_title("Country count")
+axes[1].set_title("Payloads with multi-ownership")
+axes[2].set_title("Payloads with multi-ownership")
+
+df.hist("country_count",ax=axes[0])
+df[ df["country_count"] > 1 ].hist("country_count",ax=axes[1])
+df[ df["country_count"] > 2 ].hist("country_count",ax=axes[2])
+```
+
+    Satellites with multiple owners:  171
+    Transferred satellites:  12
+
+
+
+
+
+    array([<matplotlib.axes._subplots.AxesSubplot object at 0x7f8b61437310>],
+          dtype=object)
+
+
+
+
+![png](/assets/images//space-launch-data-exploration_60_2.png)
+
+<b>Edit:</b> An earlier version didn't take into account the different nations in this column.
+
+Our goal is to get a sense of how many nations have reached space with a satellite, Many satellites are apparently owned by two nations, but after that. We'll deal with this adding a "second_nation" column, leave the "nation" column for the first nation, and disregard the few cases with more than three owners.
+As for satellites that have been transfered, we'll only consider the first nation at launch as the owner nation.
+
+
+```python
+def clean_country(x):
+    return x.strip();
+
+def build_clean_map():
+    words_to_remove = ["\d+","\(.*?\)","\(","\)","→.*"]
+
+    clean_map = {word:"" for word in words_to_remove}
+    return clean_map
+
+clean_map = build_clean_map();
+
+#joined["second_nation"] = joined["nation"].apply(lambda x: x.split(",")[1] if (x.count(",") > 0) else None)
+#joined["first_nation"] = joined["nation"].apply(lambda x: x.split(",")[0]);
+
+joined["second_nation"] = joined["nation"].apply(lambda x: x.strip()).replace(clean_map,regex=True).apply(lambda x: x.strip());
+joined["first_nation"] = joined["second_nation"].apply(lambda x: x.split(",")[0])
+joined["second_nation"] = joined["second_nation"].apply(lambda x: x.split(",")[1] if (x.count(",") > 0) else None)
+
+nation_payloads_year = joined.groupby("year")["first_nation","second_nation"].apply(lambda x: len(pd.unique(x.values.ravel()).tolist()))
+
+#joined["first_nation"].concat(joined["second_nation"]).unique()
+
+#clean_country("monaco")
+```
+
+    /opt/conda/lib/python3.7/site-packages/ipykernel_launcher.py:19: FutureWarning: Indexing with multiple keys (implicitly converted to a tuple of keys) will be deprecated, use a list instead.
+
 
 
 ```python
@@ -2022,11 +2198,13 @@ country_month_pivot_table = countries_per_month.pivot("month","year","country").
 launches_per_month = unique_launches.groupby( ["year","month"] ).agg({"country":"count"}).reset_index()
 launches_month_pivot_table = countries_per_month.pivot("month","year","country").fillna(0)
 
-nation_payloads_year = joined.groupby(["year"],as_index=False).agg({'nation': 'nunique'})
+#We transform both columns, first nation and second nation into a single list, and count the unique values with len. pd.unique(x.values.ravel()) 
+nation_payloads_year = joined.groupby("year")["first_nation","second_nation"].apply(lambda x: len(pd.unique(x.values.ravel()).tolist())).reset_index().rename({0:"nation"},axis=1)
+#nation_payloads_year = joined.groupby(["year"],as_index=False).agg({'first_nation': 'nunique'})
 
 fig,(ax,ax2) = plt.subplots(2,1,figsize=(16,8))
 sns.heatmap(country_month_pivot_table,ax=ax, square=True,yticklabels=False)
-sns.lineplot(x="year",y="nation",data=nation_payloads_year,ax=ax2,legend="full")
+sns.lineplot(x="year",y="nation",data=nation_payloads_year[ nation_payloads_year["year"]<2020 ],ax=ax2,legend="full")
 
 ax.set_xticklabels([year if year%5==0 else "" for year in countries_year["year"]])
 ax.set_title("Number of different countries launching to space each month",fontsize=20)
@@ -2038,6 +2216,10 @@ ax2.set_title("Different nations putting payloads in orbit each year",fontsize=2
 
 ```
 
+    /opt/conda/lib/python3.7/site-packages/ipykernel_launcher.py:11: FutureWarning: Indexing with multiple keys (implicitly converted to a tuple of keys) will be deprecated, use a list instead.
+      # This is added back by InteractiveShellApp.init_path()
+
+
 
 
 
@@ -2046,7 +2228,7 @@ ax2.set_title("Different nations putting payloads in orbit each year",fontsize=2
 
 
 
-![png](/assets/images//space-launch-data-exploration_55_1.png)
+![png](/assets/images//space-launch-data-exploration_63_2.png)
 
 
 Let's see how many different countries have launched from their territory, and how often:
@@ -2459,6 +2641,247 @@ country_launches.sort_values("last_launch_year",ascending=False)
 
 
 
+
+```python
+#Pace of launches for selected countries
+#
+#country_and_month = unique_launches.groupby( ["country","year","month"] ).size().reset_index()
+#
+#countries = []
+#
+#country = country_and_month[ country_and_month["country"]=="China" ].pivot("year","month",0).fillna(0)
+#
+#sns.heatmap(country,cmap="coolwarm")
+
+
+
+argentina = joined[ joined["nation"]=="argentina" ].groupby(["year","month"] ,as_index=False).agg({'nation': 'count'})
+
+argentina.pivot("year","month","nation").fillna(0)
+```
+
+
+
+
+<div class="table-container">
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th>month</th>
+      <th>1</th>
+      <th>2</th>
+      <th>4</th>
+      <th>5</th>
+      <th>6</th>
+      <th>8</th>
+      <th>9</th>
+      <th>10</th>
+      <th>11</th>
+      <th>12</th>
+    </tr>
+    <tr>
+      <th>year</th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>1990</th>
+      <td>1.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>1996</th>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>1.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>1.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>1997</th>
+      <td>1.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>1998</th>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>1.0</td>
+    </tr>
+    <tr>
+      <th>2000</th>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>1.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>2007</th>
+      <td>1.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>2013</th>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>1.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>1.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>2014</th>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>1.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>1.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>2015</th>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>1.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>2016</th>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>2.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>2017</th>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>1.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>2018</th>
+      <td>0.0</td>
+      <td>2.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>1.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>2020</th>
+      <td>2.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+
+
 Time to look at the data but grouping by country: let's see what countries have launched to space in the different decades. We'll draw several heatmaps, one for each quarter century, and see how the information has changed over time.
 
 
@@ -2477,7 +2900,7 @@ for i,year in enumerate(years):
 ```
 
 
-![png](/assets/images//space-launch-data-exploration_61_0.png)
+![png](/assets/images//space-launch-data-exploration_70_0.png)
 
 
 We can see the trend we saw earlier reflected here as well: before the collapse of the Soviet Union, a great number of launches that died down. The number of launches from the US stays steady, and China really picks up the pace late this past decade. If the countries are grouped more conveniently, it's possible to plot this in a line chart to see the countries with the most launches more clearly.
@@ -2507,12 +2930,12 @@ sns.lineplot(x="year",y="launches",hue="country",data=all_countries[ (all_countr
 
 
 
-    <matplotlib.axes._subplots.AxesSubplot at 0x7fadfe971310>
+    <matplotlib.axes._subplots.AxesSubplot at 0x7f8b60380a90>
 
 
 
 
-![png](/assets/images//space-launch-data-exploration_63_1.png)
+![png](/assets/images//space-launch-data-exploration_72_1.png)
 
 
 ## Launch vehicles, number of satellites per launch
@@ -2523,14 +2946,14 @@ One last look at our data: what about the number of satellites being put to spac
 ```python
 fig, (ax) = plt.subplots(1,1,figsize=(20,6))
 #sns.scatterplot(x="year",y="country", size="country", hue="nation", data=countries_year)
-ax.set_title("Number of launches per year, and number of payloads in each launch",fontsize=30)
+ax.set_title("Number of launches per year, with total number of payloads",fontsize=30)
 sns.scatterplot(x="year",y="launches", size="payload_total", color="green", palette="coolwarm", data=countries_year,ax=ax, sizes=(1,600), marker="o")
 fig.show()
 
 ```
 
 
-![png](/assets/images//space-launch-data-exploration_65_0.png)
+![png](/assets/images//space-launch-data-exploration_74_0.png)
 
 
 A perhaps better way to visualize this is to plot the payload divided by the number of launches. 
@@ -2556,7 +2979,7 @@ fig.show()
 ```
 
 
-![png](/assets/images//space-launch-data-exploration_67_0.png)
+![png](/assets/images//space-launch-data-exploration_76_0.png)
 
 
 There was some increase before the introduction of Starlink by SpaceX, but so far in 2020, the difference has been staggering.
