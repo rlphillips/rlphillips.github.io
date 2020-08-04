@@ -10,7 +10,7 @@ categories:
 
 [Previously](https://rlphillips.github.io/data/2020/07/06/space-launch-data-exploration.html), we examined some trends in access to space: how many launches and what payloads were put in orbit lately. Now we'll visualize some of that information in a map. We'll use plotly choropleth Maps. Besides our space launch dataset, we will be using a list of country codes, [available here](https://www.kaggle.com/andradaolteanu/country-mapping-iso-continent-region) with the full name of the country and the continent: in order to properly color a country in the map, we will need the country ISO code. 
 
-**Note**: throughout this post, many of the code needed to make it wor in an online notebook (such as Colab, Kagle or Azure) is ommited. The full notebook is available at github, and contains every cell needed to run the code. For simplicity, in some cases, where an interactive map is rendered, either an image or a gif is used instead.
+**Note**: throughout this post, many of the code needed to make it wor in an online notebook (such as Colab, Kagle or Azure) is ommited. The full notebook is available at [github](https://github.com/rlphillips/notebooks/blob/master/space-exploration/README.md), and contains every cell needed to run the code. For simplicity, in some cases, where an interactive map is rendered, either an image or a gif is used instead.
 
 ```python
 import pandas as pd
